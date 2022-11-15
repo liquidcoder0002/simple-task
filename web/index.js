@@ -4,7 +4,7 @@ import { readFileSync } from "fs";
 import express from "express";
 import cookieParser from "cookie-parser";
 import { Shopify, LATEST_API_VERSION } from "@shopify/shopify-api";
-
+import axios from "axios";
 import applyAuthMiddleware from "./middleware/auth.js";
 import verifyRequest from "./middleware/verify-request.js";
 import { setupGDPRWebHooks } from "./gdpr.js";
@@ -78,7 +78,7 @@ export async function createServer(
   billingSettings = BILLING_SETTINGS
 ) {
   const app = express();
-
+app.use(express.json())
   app.set("use-online-tokens", USE_ONLINE_TOKENS);
   app.use(cookieParser(Shopify.Context.API_SECRET_KEY));
 
@@ -123,37 +123,115 @@ export async function createServer(
         `@shopify/shopify-api/dist/rest-resources/${Shopify.Context.API_VERSION}/index.js`
       );
       const product = await Product.all({ session });
-      console.log("req get pro====>", req);
+      // console.log("req get pro====>", req);
       res.status(200).json({ product });
     } catch (error) {
       console.log("Error" + error);
       res.status(500).json({ error });
     }
   });
-
+  const get_imag = async () =>{
+    var config = {
+      method: 'get',
+      url: 'https://api.unsplash.com/photos/random?client_id=i3eHAQeGGJhgVxKL27bNoRPdnFxa5b1FyCFvX7aIi5A',
+      headers: { }
+    };
+    
+    const randomImage = await axios(config);
+console.log("ramdom Image is :==> ", randomImage.data.urls.regular);
+   return randomImage;
+  }
   app.post("/api/products-create", async (req, res) => {
     try {
+      // console.log(index);
       
-      const session = await Shopify.Utils.loadCurrentSession(
-        req,
-        res,
+      // const { Product } = await import(
+        //   `@shopify/shopify-api/dist/rest-resources/${Shopify.Context.API_VERSION}/index.js`
+        //   );
+        //   for (let index = 0; index < 5; index++) {
+      //     const product = new Product({ session });
+      //     product.title = "Burton Custom Freestyle 151";
+      //     product.body_html = "<strong>Good snowboard!</strong>";
+      //     product.product_type = "Snowboard";
+      //     product.tags = ["Barnes & Noble", "Big Air", "John's Fav"];
+      //     const product1 = await product.save({ update: true });
+      //     // console.log("req get pro====>", req);
+      //     res.status(200).json({ product1 });
+      //   }
+      
+      // program to generate random strings
+
+// declare all characters
+
+
+
+
+const session = await Shopify.Utils.loadCurrentSession(
+  req,
+  res,
         app.get("use-online-tokens")
-      );
-      for (let index = 0; index < 5; index++) {
-    console.log(index);
+        );
+     var imag_count = [];
+      console.log("req body", req.body);
+      const {qty} = req.body;
+        // console.log("name is :==>", new_fun.data.urls.regular);
+        const client = new Shopify.Clients.Graphql(session?.shop, session?.accessToken);
+        for (let index = 0; index < qty; index++) {
+          let x = Math.floor((Math.random() * 10) + 1);
+          // function generateString(length) {
+            const characters ='ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz';
+            let result = ' ';
+            const charactersLength = characters.length;
+            for ( let i = 0; i < x; i++ ) {
+              
+                        const new_fun = await get_imag()
+                      const Imgurl = new_fun.data.urls.regular;
+              
+               imag_count = [{
+                
+                  "altText": "",
+                  "src": Imgurl
+                
+               }]
+              console.log("image urls test",Imgurl, i)
+                result += characters.charAt(Math.floor(Math.random() * charactersLength));
+            }
+        // }
         
-        const { Product } = await import(
-          `@shopify/shopify-api/dist/rest-resources/${Shopify.Context.API_VERSION}/index.js`
-          );
-          const product = new Product({ session });
-          product.title = "Burton Custom Freestyle 151";
-          product.body_html = "<strong>Good snowboard!</strong>";
-          product.product_type = "Snowboard";
-          product.tags = ["Barnes & Noble", "Big Air", "John's Fav"];
-          const product1 = await product.save({ update: true });
-          console.log("req get pro====>", req);
-          res.status(200).json({ product1 });
+        
+        const prodData = await client.query({
+          data: {
+            query:`mutation productCreate($input: ProductInput!) {
+              productCreate(input: $input) {
+                product {
+                  id
+                  title
+                }
+        userErrors {
+          field
+          message
         }
+      }
+    }
+    `,
+    variables:{
+      "input": {
+        "title": "ajgddfgdfgsfgscghfghfghfgh fgh fg h h 22",
+        "tags": [
+          "cutome_added"
+        ],
+        "images": 
+          
+          imag_count
+          
+        
+        
+      }
+    }
+  }
+})
+}
+
     } catch (error) {
       console.log("Error" + error);
       res.status(500).json({ error });

@@ -12,7 +12,7 @@ import { getSessionToken } from "@shopify/app-bridge-utils";
 import { useAppBridge } from "@shopify/app-bridge-react";
 
 export default function Products() {
-    const [value, setValue] = useState('Jaded Pixel');
+    const [value, setValue] = useState(5);
 
     const handleChange = useCallback((newValue) => setValue(newValue), []);
   
@@ -35,10 +35,12 @@ export default function Products() {
     
     
   }
-const newProds = {};
+const newProds = {
+  qty:value,
+};
 
   const getCustomers2 = async (newProds) => {
-
+console.log("new prods", newProds);
     const token = await getSessionToken(app);
     const config = {
         headers: {
@@ -54,7 +56,7 @@ const newProds = {};
   }
 
 
-const CreateProd =  (newProds) => {
+const CreateProd =  () => {
    
         getCustomers2(newProds)
     
@@ -66,7 +68,7 @@ const CreateProd =  (newProds) => {
     getCustomers1();
     
     // getpagination()
-  }, []);
+  }, [newProds]);
 
 
 
@@ -116,7 +118,7 @@ const CreateProd =  (newProds) => {
       autoComplete="off"
     />
     <br></br>
-    <Button onClick={() =>CreateProd(newProds)}>Add product</Button>
+    <Button onClick={() => CreateProd()}>Add product</Button>
     </>
   )
 }
