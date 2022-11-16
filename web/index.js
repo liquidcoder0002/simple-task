@@ -141,6 +141,9 @@ app.use(express.json())
 console.log("ramdom Image is :==> ", randomImage.data.urls.regular);
    return randomImage;
   }
+
+
+  
   app.post("/api/products-create", async (req, res) => {
     try {
       // console.log(index);
@@ -171,36 +174,47 @@ const session = await Shopify.Utils.loadCurrentSession(
   res,
         app.get("use-online-tokens")
         );
-     var imag_count = [];
-      console.log("req body", req.body);
-      const {qty} = req.body;
+        
+        // console.log("req body", req.body);
+        const {qty} = req.body;
         // console.log("name is :==>", new_fun.data.urls.regular);
         const client = new Shopify.Clients.Graphql(session?.shop, session?.accessToken);
         for (let index = 0; index < qty; index++) {
-          let x = Math.floor((Math.random() * 10) + 1);
+          
+          let x1 = Math.floor((Math.random() * 10) + 1);
+          let x;
+          if (x1 > 4) {
+             x = x1;
+            console.log("if ===",x1)
+          } else {
+            x = x1 + 3;
+            console.log("else ==",(x1 + 3))
+          }
           // function generateString(length) {
             const characters ='ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz';
             let result = ' ';
             const charactersLength = characters.length;
+            var imag_count = [];
             for ( let i = 0; i < x; i++ ) {
               
-                        const new_fun = await get_imag()
-                      const Imgurl = new_fun.data.urls.regular;
+                        // const new_fun = await get_imag()
+                      // const Imgurl = new_fun.data.urls.regular;
               
-               imag_count = [{
+               imag_count.push({
                 
-                  "altText": "",
-                  "src": Imgurl
+                 "altText": "",
+                //  "src": Imgurl
+                  "src": "https://images.unsplash.com/photo-1668479237709-20ee5c44c61a?ixlib=rb-4.0.3&ixid=MnwxMjA3fDF8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8&auto=format&fit=crop&w=1170&q=80"
                 
-               }]
-              console.log("image urls test",Imgurl, i)
+               })
+              // console.log("image urls test", i,imag_count,result)
                 result += characters.charAt(Math.floor(Math.random() * charactersLength));
             }
         // }
         
         
         const prodData = await client.query({
-          data: {
+                    data: {
             query:`mutation productCreate($input: ProductInput!) {
               productCreate(input: $input) {
                 product {
@@ -216,21 +230,21 @@ const session = await Shopify.Utils.loadCurrentSession(
     `,
     variables:{
       "input": {
-        "title": "ajgddfgdfgsfgscghfghfghfgh fgh fg h h 22",
+        "title": result,
         "tags": [
           "cutome_added"
         ],
         "images": 
-          
-          imag_count
-          
-        
+          imag_count 
         
       }
     }
   }
 })
 }
+
+
+
 
     } catch (error) {
       console.log("Error" + error);

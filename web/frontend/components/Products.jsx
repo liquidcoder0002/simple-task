@@ -30,7 +30,7 @@ export default function Products() {
       }
       
     });
-    // console.log(res.data.product)
+    console.log(res.data.product)
     setprod(res.data.product)
     
     
@@ -52,6 +52,7 @@ console.log("new prods", newProds);
     const res = await axios.post(`/api/products-create`,newProds,config );
     // console.log(res)
     // setprod(res.data.product)
+    getCustomers1();
     
   }
 
@@ -60,14 +61,12 @@ const CreateProd =  () => {
    
         getCustomers2(newProds)
     
-    getCustomers1()
 
 }
   
   useEffect(() => {
     getCustomers1();
     
-    // getpagination()
   }, [newProds]);
 
 
