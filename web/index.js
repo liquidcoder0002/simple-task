@@ -148,9 +148,9 @@ console.log("ramdom Image is :==> ", randomImage.data.urls.regular);
     try {
       // console.log(index);
       
-      // const { Product } = await import(
-        //   `@shopify/shopify-api/dist/rest-resources/${Shopify.Context.API_VERSION}/index.js`
-        //   );
+      const { Location } = await import(
+          `@shopify/shopify-api/dist/rest-resources/${Shopify.Context.API_VERSION}/index.js`
+          );
         //   for (let index = 0; index < 5; index++) {
       //     const product = new Product({ session });
       //     product.title = "Burton Custom Freestyle 151";
@@ -174,21 +174,38 @@ const session = await Shopify.Utils.loadCurrentSession(
   res,
         app.get("use-online-tokens")
         );
-        
-        // console.log("req body", req.body);
+       const locationData =  await Location.all({
+          session,
+        });
+        console.log("req location length", locationData.length);
+        let Loca_id;
+        for (let index = 0; index < locationData.length; index++) {
+          Loca_id = locationData[index].id;
+          // console.log("req locato", locationData[index].id);
+          
+        }
         const {qty} = req.body;
         // console.log("name is :==>", new_fun.data.urls.regular);
         const client = new Shopify.Clients.Graphql(session?.shop, session?.accessToken);
         for (let index = 0; index < qty; index++) {
           
           let x1 = Math.floor((Math.random() * 10) + 1);
+          let x2 = Math.floor((Math.random() * 10) + 1);
           let x;
+          let comp;
+          if (x1 > x2) {
+            comp = x2 + 10;
+           console.log("if x1==",x1,"x2",(x2 + 10))
+         } else {
+          comp = x2 + 3;
+           console.log("else x1==",x1,"x2",(x2 + 5))
+         }
           if (x1 > 4) {
              x = x1;
-            console.log("if ===",x1)
+            // console.log("if ===",x1)
           } else {
             x = x1 + 3;
-            console.log("else ==",(x1 + 3))
+            // console.log("else ==",(x1 + 3))
           }
           // function generateString(length) {
             const characters ='ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz';
@@ -220,6 +237,7 @@ const session = await Shopify.Utils.loadCurrentSession(
                 product {
                   id
                   title
+                
                 }
         userErrors {
           field
@@ -234,13 +252,20 @@ const session = await Shopify.Utils.loadCurrentSession(
         "tags": [
           "cutome_added"
         ],
-        "images": 
-          imag_count 
+        "images": imag_count ,
+        "variants": [
+        {
+          "position": 1,
+          "compareAtPrice": comp,
+          "price": x1
+        } 
+        ]
         
       }
     }
   }
 })
+// console.log("prodData : ",prodData.body.data.productCreate)
 }
 
 
