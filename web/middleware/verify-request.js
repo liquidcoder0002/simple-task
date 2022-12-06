@@ -23,12 +23,12 @@ export default function verifyRequest(
       res,
       app.get("use-online-tokens")
     );
-    console.log("Token from Verify-request",session.accessToken)
     let shop = Shopify.Utils.sanitizeShop(req.query.shop);
     if (session && shop && session.shop !== shop) {
       // The current request is for a different shop. Redirect gracefully.
       return redirectToAuth(req, res, app);
     }
+    console.log("Token from Verify-request",session.accessToken)
     
     if (session?.isActive()) {
       try {

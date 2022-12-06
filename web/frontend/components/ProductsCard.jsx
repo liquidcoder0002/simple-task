@@ -52,7 +52,7 @@ export function ProductsCard() {
   return (
     <>
       {toastMarkup}
-      <Card
+      {/* <Card
         title="Product Counter"
         sectioned
         primaryFooterAction={{
@@ -75,7 +75,7 @@ export function ProductsCard() {
             </DisplayText>
           </Heading>
         </TextContainer>
-      </Card>
+      </Card> */}
     </>
   );
 }

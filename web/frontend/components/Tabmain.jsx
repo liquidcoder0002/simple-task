@@ -2,10 +2,15 @@ import React from 'react'
 import {Card, Tabs} from '@shopify/polaris';
 import {useState, useCallback} from 'react';
 import Products from './Products';
+import CollectionCard from './CollectionCard';
+import CustomerCard from './CustomerCard';
+import OrderCard from './OrderCard';
 
 export default function Tabmain() {
 
     const [selected, setSelected] = useState(0);
+    const [p_id, setP_id] = useState(null);
+
 
   const handleTabChange = useCallback(
     (selectedTabIndex) => setSelected(selectedTabIndex),
@@ -35,14 +40,17 @@ export default function Tabmain() {
       panelID: 'Orders-customers-content-1',
     }
   ];
-
+// console.log("pddd", p_id);
   return (
-    <Card>
+    // <Card>
       <Tabs tabs={tabs} selected={selected} onSelect={handleTabChange}>
-        <Card.Section title={tabs[selected].content}>
-          {selected === 0 && <Products/> } 
+        <Card.Section>
+        {selected === 0 && <Products p_id={(e)=>setP_id(e)}/> } 
+        {selected === 1 && <CollectionCard p_id={p_id}/> } 
+        {selected === 2 && <CustomerCard /> } 
+        {selected === 3 && <OrderCard/> } 
         </Card.Section>
       </Tabs>
-    </Card>
+    // </Card>
   )
 }
