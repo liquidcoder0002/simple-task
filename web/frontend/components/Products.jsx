@@ -17,6 +17,7 @@ import { useAppBridge } from "@shopify/app-bridge-react";
 export default function Products(props) {
   const [value, setValue] = useState(5);
   const [spin1, setSpin] = useState(false);
+  const [spin2, setSpin2] = useState(false);
 
     const handleChange = useCallback((newValue) => setValue(newValue), []);
   
@@ -36,6 +37,7 @@ export default function Products(props) {
       
     });
     setprod(res.data.product);
+    console.log("=====",res.data.product );
   let api_id = [];
     for (let index = 0; index < res.data.product.length; index++) {
       // const element = array[index];
@@ -46,7 +48,7 @@ export default function Products(props) {
     
     props.p_id(api_id)
     set_api_id(api_id)
-    // console.log("get product :",res.data.product[5].image.src);
+    // console.log("get product :",res.data.product[1].vendor);
   }
 const newProds = {
   qty:value,
@@ -85,17 +87,19 @@ const newProds = {
     };
     const res = await axios.delete(`/api/Products-delete`, config);
     // setprod(res.data.product);
-    console.log("res Del product ==", res.data.success);
-    if(res.data.success == true){
+    console.log("res Del product ==", res.data);
+    getCustomers1();
+    if(res.data.success === true){
     console.log("res succes  Del product ==", res.data.success);
-
-    await getCustomers1();
+    // getCustomers1();
+    // setSpin2(false)
     }else{
 
     }
   };
 
 const delepro = () =>{
+  // setSpin2(true)
   deleteProduct(newProds)
 }
 
@@ -108,10 +112,11 @@ const CreateProd =  () => {
   
   useEffect(() => {
     getCustomers1();
-    // console.log("spin=",spin1)
+    console.log("spin=",prod) 
   }, []);
 
-const spin = <Spinner accessibilityLabel="Spinner example" size="large" />
+  const spin = <Spinner accessibilityLabel="Spinner example" size="large" />
+  const spinde = <Spinner accessibilityLabel="Spinner example" size="large" />
 
   return (
     <>
@@ -130,8 +135,8 @@ const spin = <Spinner accessibilityLabel="Spinner example" size="large" />
 {spin1 == false ? <Button primary onClick={() => CreateProd()}>Add product</Button> : spin}
     
 {/* <Button primary onClick={() => CreateProd()}>Add product</Button> */}
-
-    <Button destructive onClick={() => delepro()}>Delete All products</Button>
+{spin2 == false ? <Button destructive onClick={() => delepro()}>Delete All products</Button> : spinde}
+    
     </div>
 </div>
 
@@ -141,7 +146,7 @@ const spin = <Spinner accessibilityLabel="Spinner example" size="large" />
         resourceName={{singular: 'customer', plural: 'customers'}}
         items={prod}
         renderItem={(item) => {
-          const {id, url, avatarSource, name, location, latestOrderUrl,title,image} = item;
+          const {id, url, avatarSource, name, location, latestOrderUrl,title,image,vendor,product_type,tags,variants} = item;
           // console.log("first",image?.src)
           const shortcutActions = latestOrderUrl
             ? [{content: 'View latest order', url: latestOrderUrl}]
@@ -164,9 +169,12 @@ const spin = <Spinner accessibilityLabel="Spinner example" size="large" />
               name={name}
             >
               <h3>
-                <TextStyle variation="strong">{title}</TextStyle>
+                <TextStyle variation="strong"><b>Title : </b>{title}</TextStyle>
               </h3>
-              <div>{location}</div>
+              <div><b>Vendor : </b>{vendor}</div>
+              <div><b>Tags : </b>{tags}</div>
+              <div><b>Price : </b>${variants[0]?.price}</div>
+              <div><b>Created Date : </b>{variants[0]?.created_at}</div>
             </ResourceItem>
           );
         }}

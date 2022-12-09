@@ -16,10 +16,28 @@ import { useAppBridge } from "@shopify/app-bridge-react";
 
 export default function CustomerCard() {
     const [value, setValue] = useState(2);
-  // console.log("ddddddddddddddddddd",props.p_id);
-  // const api__key_link = props.p_id;
+    const[cust,setcust] = useState([]);
+  
   const handleChange = useCallback((newValue) => setValue(newValue), []);
     const app = useAppBridge();
+
+    const getCustomers1 = async () => {
+
+      const token = await getSessionToken(app);
+      
+      const res = await axios.get(`/api/Customer-get`, {
+        headers: {
+          Authorization: "Bearer " + token,
+        }
+        
+      });
+      
+      setcust(res.data.customer);
+      console.log("customer front=====",res.data.customer);
+    
+    }
+
+
 
     const newColl1 = {
         qty: value,
@@ -63,6 +81,11 @@ export default function CustomerCard() {
         deleteCustomer(newColl1);
       };
 
+
+      useEffect(() => {
+        getCustomers1()
+      }, []);
+
   return (
     <>
     <Card>
@@ -81,6 +104,67 @@ export default function CustomerCard() {
       </div>
 </div>
 </Card>
+
+
+<Card>
+      <ResourceList
+        resourceName={{singular: 'customer', plural: 'customers'}}
+        items={cust}
+        renderItem={(item) => {
+          const {id, url, avatarSource, name, latestOrderUrl,image,last_name,first_name,email,phone  } = item;
+          // console.log("first",image?.src)
+          const shortcutActions = latestOrderUrl
+            ? [{content: 'View latest order', url: latestOrderUrl}]
+            : null;
+
+          return (
+            <ResourceItem
+              id={id}
+              url={image}
+              media={
+                <Avatar
+                  customer
+                  size="medium"
+                  name={name}
+                  source={image?.src}
+                />
+              }
+              shortcutActions={shortcutActions}
+              accessibilityLabel={`View details for ${name}`}
+              name={name}
+            >
+              <h3>
+               <b>First Name : </b> {first_name} 
+              </h3>
+              <h3>
+                <b>
+              Last Name : 
+                </b>
+               {last_name}
+              </h3>
+
+              <h3>
+                <b>
+              Email : 
+                </b>
+               {email}
+              </h3>
+
+              <h3>
+                <b>
+              Phone : 
+                </b>
+               {phone}
+              </h3>
+              {/* <div><b>Vendor : </b>{vendor}</div>
+              <div><b>Tags : </b>{tags}</div>
+              <div><b>Price : </b>${variants[0]?.price}</div>
+              <div><b>Created Date : </b>{variants[0]?.created_at}</div> */}
+            </ResourceItem>
+          );
+        }}
+      />
+    </Card>
     </>
   )
 }

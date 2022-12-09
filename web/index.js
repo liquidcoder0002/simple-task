@@ -139,9 +139,9 @@ export async function createServer(
         `@shopify/shopify-api/dist/rest-resources/${Shopify.Context.API_VERSION}/index.js`
       );
       const product = await Product.all({ session });
-      // console.log("req get pro====>", req);
+  //  console.log("req get pro====>", req);
       res.status(200).json({ product });
-      // console.log("product id===>",res)
+      console.log("product id===>",product)
     } catch (error) {
       console.log("Error" + error);
       res.status(500).json({ error });
@@ -276,7 +276,7 @@ export async function createServer(
             },
           },
         });
-        console.log("prodData index : ",prodData.body.data.productCreate.product)
+        // console.log("prodData index : ",prodData.body.data.productCreate.product)
         product_id_array.push(prodData.body.data.productCreate.product.id)
       }
       getProd_id(req, res, product_id_array);
@@ -341,7 +341,7 @@ export async function createServer(
           // res.json(collData)
           // coll_id_array.push(collDatadel.body.data.collectionCreate.collection.id)
           // }
-          console.log("DELETE API======",collDatadel.body.data);
+          // console.log("DELETE API======",collDatadel.body.data.productDelete);
         });
       }
       // getCollectionid(req, res, coll_id_array);
@@ -355,6 +355,34 @@ export async function createServer(
   });
 
 
+
+  app.get("/api/Collections-get", async (req, res) => {
+    try {
+      const session = await Shopify.Utils.loadCurrentSession(
+        req,
+        res,
+        app.get("use-online-tokens")
+      );
+      const { CustomCollection } = await import(
+        `@shopify/shopify-api/dist/rest-resources/${Shopify.Context.API_VERSION}/index.js`
+      );
+      // const product = await Product.all({ session });
+      // Session is built by the OAuth process
+
+      const collection = await CustomCollection.all({
+  session: session,
+});
+
+
+
+      // console.log("req get pro====>", req);
+      res.status(200).json({ collection });
+      // console.log("collection id===>",res.data)
+    } catch (error) {
+      console.log("Error" + error);
+      res.status(500).json({ error });
+    }
+  });
 
   app.post("/api/collection-create", async (req, res) => {
     try {
@@ -554,6 +582,37 @@ export async function createServer(
     }
   });
 
+
+
+  app.get("/api/Customer-get", async (req, res) => {
+    try {
+      const session = await Shopify.Utils.loadCurrentSession(
+        req,
+        res,
+        app.get("use-online-tokens")
+      );
+      const { Customer } = await import(
+        `@shopify/shopify-api/dist/rest-resources/${Shopify.Context.API_VERSION}/index.js`
+      );
+      // const product = await Product.all({ session });
+      // Session is built by the OAuth process
+
+      const customer = await Customer.all({
+        session: session,
+      });
+      
+
+
+
+      // console.log("req get pro====>", req);
+      res.status(200).json({ customer });
+      // console.log("customer id===>",res)
+    } catch (error) {
+      console.log("Error" + error);
+      res.status(500).json({ error });
+    }
+  });
+
   app.post("/api/Customer-create", async (req, res) => {
     try {
       const session = await Shopify.Utils.loadCurrentSession(
@@ -721,6 +780,37 @@ export async function createServer(
     }
   });
 
+
+  app.get("/api/Orders-get", async (req, res) => {
+    try {
+      const session = await Shopify.Utils.loadCurrentSession(
+        req,
+        res,
+        app.get("use-online-tokens")
+      );
+      const { DraftOrder } = await import(
+        `@shopify/shopify-api/dist/rest-resources/${Shopify.Context.API_VERSION}/index.js`
+      );
+      // const product = await Product.all({ session });
+      // Session is built by the OAuth process
+
+      const order = await DraftOrder.all({
+        session: session,
+      });
+      
+      
+
+
+
+      // console.log("req get pro====>", req);
+      res.status(200).json({ order });
+      console.log("order id===>",order)
+    } catch (error) {
+      console.log("Error" + error);
+      res.status(500).json({ error });
+    }
+  });
+
   app.post("/api/Orders-create", async (req, res) => {
     try {
       const session = await Shopify.Utils.loadCurrentSession(
@@ -739,7 +829,8 @@ export async function createServer(
       for (let index = 0; index < qty; index++) {
         let x1 = Math.floor(Math.random() * 10 + 1);
         let x2 = Math.floor(Math.random() * 10 + 1);
-        var digits = Math.floor(Math.random() * 9000000) + 1000000;
+        var digits = Math.floor(Math.random() * 9) + 100;
+        var digi = Math.floor(Math.random() * 9) + 10 ;
         let x;
         let comp;
         if (x1 > x2) {
@@ -775,7 +866,6 @@ export async function createServer(
             }`,
             variables: {
               "input": {
-                // "customerId": "gid://shopify/Customer/544365967",
                 "note": "Test draft order",
                 "email": "test.user@shopify.com",
                 "taxExempt": true,
@@ -785,7 +875,7 @@ export async function createServer(
                 ],
                 "shippingLine": {
                   "title": "Custom Shipping",
-                  "price": 4.55
+                  "price": digi
                 },
                 "shippingAddress": {
                   "address1": "123 Main St",
@@ -801,55 +891,18 @@ export async function createServer(
                   "country": "Canada",
                   "zip": "Z9Z 9Z9"
                 },
-                "appliedDiscount": {
-                  "description": "damaged",
-                  "value": 5,
-                  "amount": 5,
-                  "valueType": "FIXED_AMOUNT",
-                  "title": "Custom"
-                },
                 "lineItems": [
                   {
                     "title": "Custom product",
-                    "originalUnitPrice": 14.99,
-                    "quantity": 5,
-                    "appliedDiscount": {
-                      "description": "wholesale",
-                      "value": 5,
-                      "amount": 3.74,
-                      "valueType": "PERCENTAGE",
-                      "title": "Fancy"
-                    },
+                    "originalUnitPrice": digits,
+                    "quantity": comp,
                     "weight": {
                       "value": 1,
                       "unit": "KILOGRAMS"
                     },
-                    "customAttributes": [
-                      {
-                        "key": "color",
-                        "value": "Gold"
-                      },
-                      {
-                        "key": "material",
-                        "value": "Plastic"
-                      }
-                    ]
                   },
-                  {
-                    "variantId": "gid://shopify/ProductVariant/43703351410938",
-                    "quantity": 2
-                  }
                 ],
-                "customAttributes": [
-                  {
-                    "key": "name",
-                    "value": "Achilles"
-                  },
-                  {
-                    "key": "city",
-                    "value": "Troy"
-                  }
-                ]
+               
               }
             },
           },
